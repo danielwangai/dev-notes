@@ -1,1 +1,1 @@
-export users from './users'
+export usersReducer from './users'
