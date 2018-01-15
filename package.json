@@ -1,0 +1,39 @@
+{
+  "name": "dev-notes",
+  "version": "1.0.0",
+  "description": "Platform to mentor upcoming developers.",
+  "main": "index.js",
+  "repository": "git@github.com:danielwangai/dev-notes.git",
+  "author": "Daniel Wangai <mainad57@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint app/.; exit 0",
+    "dev": "webpack-dev-server & yarn lint:watch",
+    "lint:watch": "./node_modules/.bin/esw app/. -w",
+    "production": "webpack -p"
+  },
+  "dependencies": {
+    "node-sass": "^4.7.2",
+    "sass-loader": "^6.0.6"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.2.1",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-react-hmre": "^1.1.1",
+    "eslint": "^4.15.0",
+    "eslint-config-standard": "^11.0.0-beta.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-react": "^7.5.1",
+    "eslint-plugin-standard": "^3.0.1",
+    "eslint-watch": "^3.1.3",
+    "html-webpack-plugin": "^2.30.1",
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "^2.10.0"
+  }
+}
