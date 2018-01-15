@@ -8,7 +8,7 @@ const PATHS = {
 }
 
 const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
-  template: './app/index.html',
+  template: path.join(__dirname, '/app/index.html'),
   filename: 'index.html',
   inject: 'body',
 })
@@ -24,8 +24,8 @@ const isProduction = LAUNCH_COMMAND === 'production'
 process.env.BABEL_ENV = LAUNCH_COMMAND
 
 const productionPlugin = new webpack.DefinePlugin({
-	'process.env': {
-	NODE_ENV: JSON.stringify('production'),
+  'process.env': {
+    NODE_ENV: JSON.stringify('production'),
   },
 })
 
@@ -37,36 +37,38 @@ const baseConfigurations = {
   ],
   output: {
     path: PATHS.build,
-    filename: 'index_bundle.js'
+    filename: 'index_bundle.js',
   },
   module: {
     // transformations handled here
     loaders: [
       {test: /\.js$|\.jsx$/, exclude: /node_modules/, loader: 'babel-loader'},
       {test: /\.scss$/,
-        use: [{
-          loader: "style-loader!sass-loader?sourceMap&modules&localIdentName=[name]__[local]___[hash:base64:5]" // creates style nodes from JS strings
-        },
-      ]},
+        use: [
+          {
+            loader: 'style-loader!sass-loader?sourceMap&modules&localIdentName=[name]__[local]___[hash:base64:5]', // creates style nodes from JS strings
+          },
+        ],
+      },
     ],
   },
 }
 
 const developmentConfigurations = {
-  devtool: 'cheap-module-inline-source-map',/**
+  devtool: 'cheap-module-inline-source-map', /**
     the best option for production because:-
-       -	it displays the correct line number for errors
+       - it displays the correct line number for errors
        - has the smallest(at time of coding) size after bundling
   */
   devServer: {
     contentBase: PATHS.build,
     hot: true, // requires HMR
-    inline: true,// webpack-dev-server client entry is added to the bundle which refreshes the page on change
+    inline: true, // webpack-dev-server client entry is added to the bundle which refreshes the page on change
     progress: true,
   },
   plugins: [
     HtmlWebpackPluginConfig, // simplifies creation of HTML files to serve your webpack bundles
-    new webpack.HotModuleReplacementPlugin(),// exchanges, adds, or removes modules while app is running
+    new webpack.HotModuleReplacementPlugin(), // exchanges, adds, or removes modules while app is running
   ],
 }
 
