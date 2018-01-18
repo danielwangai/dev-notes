@@ -1,28 +1,23 @@
-import React, { Component } from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom'
-import { createStore, combineReducers } from 'redux'
+import { applyMiddleware, createStore, combineReducers, compose } from 'redux'
 import { Provider } from 'react-redux'
+import thunk from 'redux-thunk'
 
 // local imports
-import * as reducers from './redux/reducers/users'
+import users from './redux/reducers/users.js'
+import getRoutes from './components/App'
 
-const rootReducer = combineReducers(reducers)
+const rootReducer = combineReducers({users})
 
-const store = createStore(rootReducer)
-
-class TestComponent extends Component {
-  render () {
-    return (
-      <div>
-        Testing
-      </div>
-    )
-  }
-}
+const store = createStore(rootReducer, compose(
+  applyMiddleware(thunk),
+  window.devToolsExtension() ? window.devToolsExtension() : (f) => f
+))
 
 ReactDOM.render(
   <Provider store={store}>
-    <TestComponent />
+    {getRoutes()}
   </Provider>,
   document.getElementById('root')
 )

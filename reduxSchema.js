@@ -9,6 +9,7 @@ const appState = {
                 userId,
                 name,
                 avatar,
+                email,
             },
         },
     },
