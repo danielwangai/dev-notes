@@ -2,6 +2,8 @@ import {
   AUTHENTICATE_USER, FETCHING_USER,
   FETCHING_USER_FAILURE, FETCHING_USER_SUCCESS,
   REMOVE_FETCHING_USER, UNAUTHENTICATE_USER } from '../actions'
+import { authenticate, saveUser } from '../../config/auth'
+import { formatUserInfo } from '../../helpers/utils'
 
 // action creators
 
@@ -19,10 +21,10 @@ const fetchingUserSuccess = (user, timestamp) => (
   }
 )
 
-const fetchingUserFailure = () => (
+const fetchingUserFailure = (error) => (
   {
     type: FETCHING_USER_FAILURE,
-    error: 'Error fetching user.',
+    error: `Error fetching user.\n\n${error}`,
   }
 )
 
@@ -46,6 +48,27 @@ const removeFetchingUser = () => (
 )
 
 // thunks
+
+export function fetchAndAuthenticateUser () {
+  return function (dispatch) {
+    // signal fetching action
+    dispatch(fetchingUser())
+    // call firebase method to verify authentication to fb
+    return authenticate().then(({user, credential}) => {
+      console.log('facebook login - user\n\n', user)
+      console.log('facebook login - credential\n\n', credential)
+      const userData = user.providerData[0]
+      const userInfo = formatUserInfo(userData.uid, userData.displayName, userData.email, userData.photoURL)
+      console.log('dispatch user success', dispatch(fetchingUserSuccess(userInfo, Date.now())))
+      return dispatch(fetchingUserSuccess(userInfo, Date.now()))
+    })
+      // save user to firebase
+      .then(({user}) => saveUser(user))
+      // authenticate user
+      .then((user) => dispatch(authenticateUser(user.userId)))
+      .catch((error) => dispatch(fetchingUserFailure(error)))
+  }
+}
 
 // user reducer
 const initialState = {
@@ -75,7 +98,7 @@ const user = (state = initialUserState, action) => {
 }
 
 /** main user reducer */
-const usersReducer = (state = initialState, action) => {
+const users = (state = initialState, action) => {
   switch (action.type) {
   case FETCHING_USER:
     return {
@@ -86,7 +109,7 @@ const usersReducer = (state = initialState, action) => {
     return {
       ...state,
       isFetching: false,
-      error: 'Error Fetching user',
+      error: action.error,
     }
   case FETCHING_USER_SUCCESS:
     return !action.user ? {
@@ -123,4 +146,4 @@ const usersReducer = (state = initialState, action) => {
 }
 
 // export default reducer
-export default usersReducer
+export default users
