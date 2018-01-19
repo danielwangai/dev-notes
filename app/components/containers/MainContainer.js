@@ -5,7 +5,7 @@ import { Main } from '../pages/Main.js'
 class MainContainer extends Component {
   render () {
     return (
-      <div>Content</div>
+      <div>Content!!!</div>
     )
   }
 }
