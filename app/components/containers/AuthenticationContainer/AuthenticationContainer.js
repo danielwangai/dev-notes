@@ -4,9 +4,9 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 // components
-import Authentication from '../../pages/Authentication/Authentication.js'
+import Authentication from '../../pages/Authentication/Authentication'
 
-import * as userActionCreators from '../../../redux/reducers/users'
+import * as userActionCreators from '../../../store/modules/users/users'
 
 class AuthenticationContainer extends Component {
   constructor (props) {

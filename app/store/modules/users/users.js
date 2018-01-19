@@ -1,9 +1,9 @@
 import {
   AUTHENTICATE_USER, FETCHING_USER,
   FETCHING_USER_FAILURE, FETCHING_USER_SUCCESS,
-  REMOVE_FETCHING_USER, UNAUTHENTICATE_USER } from '../actions'
-import { authenticate, saveUser } from '../../config/auth'
-import { formatUserInfo } from '../../helpers/utils'
+  REMOVE_FETCHING_USER, UNAUTHENTICATE_USER } from './actions'
+import { authenticate, saveUser } from '../../../config/auth'
+import { formatUserInfo } from '../../../helpers/utils'
 
 // action creators
 
@@ -146,4 +146,4 @@ const users = (state = initialState, action) => {
 }
 
 // export default reducer
-export default users
+export { users }
