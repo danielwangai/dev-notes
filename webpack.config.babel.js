@@ -1,85 +1,102 @@
+import HtmlWebpackPlugin from 'html-webpack-plugin'
 import webpack from 'webpack'
 import path from 'path'
-import HtmlWebpackPlugin from 'html-webpack-plugin'
-
-const PATHS = {
-  app: path.join(__dirname, 'app'), // index.js file of app directory
-  build: path.join(__dirname, 'dist'),
-}
+import ExtractTextPlugin from 'extract-text-webpack-plugin'
 
 const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
-  template: './app/index.html',
+  template: path.join(__dirname, '/app/index.html'),
   filename: 'index.html',
   inject: 'body',
 })
 
-/**
- * process.env.npm_lifecycle_event - equal to the value of the script command being run
- * defined in scripts of package.json
- * e.g. start - for development, productiion or test
-*/
-const LAUNCH_COMMAND = process.env.npm_lifecycle_event
-const isProduction = LAUNCH_COMMAND === 'production'
+const { NODE_ENV } = process.env
 
-process.env.BABEL_ENV = LAUNCH_COMMAND
-
-const productionPlugin = new webpack.DefinePlugin({
-	'process.env': {
-	NODE_ENV: JSON.stringify('production'),
-  },
-})
-
-const baseConfigurations = {
-  // shared configurations for both development and production
-  devtool: 'cheap-module-inline-source-map', // aid in debugging
-  entry: [
-    PATHS.app,
-  ],
+const config = {
+  entry: ['./app/index.js'],
   output: {
-    path: PATHS.build,
-    filename: 'index_bundle.js'
+    path: path.join(__dirname, 'dist'),
+    filename: 'index_bundle.js',
+    publicPath: '/',
   },
   module: {
-    // transformations handled here
-    loaders: [
-      {test: /\.js$|\.jsx$/, exclude: /node_modules/, loader: 'babel-loader'},
-      {test: /\.scss$/,
-        use: [{
-          loader: "style-loader!sass-loader?sourceMap&modules&localIdentName=[name]__[local]___[hash:base64:5]" // creates style nodes from JS strings
-        },
-      ]},
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+      },
     ],
-  },
-}
-
-const developmentConfigurations = {
-  devtool: 'cheap-module-inline-source-map',/**
-    the best option for production because:-
-       -	it displays the correct line number for errors
-       - has the smallest(at time of coding) size after bundling
-  */
-  devServer: {
-    contentBase: PATHS.build,
-    hot: true, // requires HMR
-    inline: true,// webpack-dev-server client entry is added to the bundle which refreshes the page on change
-    progress: true,
   },
   plugins: [
     HtmlWebpackPluginConfig, // simplifies creation of HTML files to serve your webpack bundles
-    new webpack.HotModuleReplacementPlugin(),// exchanges, adds, or removes modules while app is running
+    new ExtractTextPlugin('bundle.styles.css'),
   ],
+  devServer: {
+    overlay: true,
+    stats: {
+      colors: true,
+      modules: false,
+    },
+  },
 }
 
-const productionConfigurations = {
-  devtool: 'cheap-module-source-map',
-  plugins: [
-    HtmlWebpackPluginConfig,
-    productionPlugin,
-  ],
+if (NODE_ENV === 'production') {
+  config.devtool = 'cheap-module-source-map'
+  config.module.rules = [
+    {
+      test: /\.css$/,
+      use: ExtractTextPlugin.extract({
+        fallback: 'style-loader',
+        use: 'css-loader',
+      }),
+    },
+    ...config.module.rules,
+  ]
+  config.plugins = [
+    ...config.plugins,
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        screw_ie8: true,
+        warnings: false,
+      },
+      mangle: {
+        screw_ie8: true,
+      },
+      output: {
+        comments: false,
+        screw_ie8: true,
+      },
+    }),
+    new webpack.EnvironmentPlugin(['NODE_ENV']),
+  ]
+} else {
+  config.devtool = 'cheap-module-inline-source-map'
+  /* the best option for production because:-
+    - it displays the correct line number for errors
+    - has the smallest(at time of coding) size after bundling
+  */
+  config.entry = [
+    'react-hot-loader/patch',
+    'webpack-dev-server/client?http://localhost:8080',
+    ...config.entry,
+  ]
+  config.devServer = {
+    contentBase: './dist',
+    hot: true,
+    ...config.devServer,
+  }
+  config.module.rules = [
+    {
+      test: /\.css/,
+      use: ['style-loader', 'css-loader'],
+    },
+    ...config.module.rules,
+  ]
+  config.plugins = [
+    ...config.plugins,
+    new webpack.NamedModulesPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+  ]
 }
 
-export default Object.assign(
-  {},
-  baseConfigurations,
-  isProduction === true ?  productionConfigurations : developmentConfigurations
-)
+export default config

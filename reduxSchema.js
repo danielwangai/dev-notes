@@ -3,12 +3,13 @@ const appState = {
         isFetching,// when fetching a user
         error, //error fetching user
         authenticatedUserId, // points to object of the authenticated user
-        isAuthed, // true if user is authenticated
+        isAuthenticated, // true if user is authenticated
         userId: {
             info: {
                 userId,
                 name,
                 avatar,
+                email,
             },
         },
     },
