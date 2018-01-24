@@ -6,3 +6,7 @@ export function formatUserInfo (userId, name, email, pictureUrl) {
     pictureUrl,
   }
 }
+
+export const checkIfAuthed = (store) => (
+  store.getState().users.isAuthenticated
+)

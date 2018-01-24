@@ -1,36 +1,43 @@
 import React, { Component } from 'react'
 // import { hashHistory, IndexRoute, Route } from 'react-router'
-import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom'
+import { BrowserRouter as Router, Link, Redirect, Route } from 'react-router-dom'
 
-import MainContainer from '../components/containers/MainContainer.js'
-import AuthenticationContainer from '../components/containers/AuthenticationContainer/AuthenticationContainer.js'
-import Home from '../components/pages/Home/Home.js'
+import MainContainer from '../components/containers/MainContainer'
+import AuthenticationContainer from '../components/containers/AuthenticationContainer/AuthenticationContainer'
+import NotesContainer from '../components/containers/Notes/NotesContainer'
+
+import { store } from '../'
+import { checkIfAuthed } from '../helpers/utils'
 
 // TODO - 404 Page
 
-class FourOhFour extends Component {
-  render () {
-    return (
-      <h1>404</h1>
-    )
-  }
+export const FourOhFour = () => {
+  return (
+    <h1>404</h1>
+  )
 }
 
-export default function getRoutes () {
+const ProtectedRoute = ({ component: Component, ...rest }) => (
+  <Route {...rest} render={(props) => (
+    checkIfAuthed(store) === true
+      ? <Component {...props} />
+      : <Redirect to='/auth' />
+  )} />
+)
+
+export default function AppRoutes () {
   return (
     <Router>
       <div>
         <ul>
           <li><Link to='/'>Main</Link></li>
-          <li><Link to='/landing'>Home</Link></li>
+          <li><Link to='/notes'>Notes</Link></li>
           <li><Link to='/auth'>Auth</Link></li>
         </ul>
-        <Switch>
-          <Route exact path='/' component={MainContainer}/>
-          <Route path='/landing' component={Home}/>
-          <Route path='/auth' component={AuthenticationContainer}/>
-          <Route component={FourOhFour}/>
-        </Switch>
+        <Route exact path='/' component={MainContainer} />
+        <ProtectedRoute path='/notes' component={NotesContainer} />
+        <Route path='/auth' component={AuthenticationContainer}/>
+        <Route component={FourOhFour}/>
       </div>
     </Router>
   )
