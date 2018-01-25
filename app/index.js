@@ -5,6 +5,7 @@ import { AppContainer } from 'react-hot-loader'
 
 import configureStore from './store/store'
 import AppRoutes from './components/App'
+import { checkIfAuthed } from './helpers/utils'
 
 export const store = configureStore()
 
@@ -12,7 +13,7 @@ const renderApp = (Component) => {
   ReactDOM.render(
     <AppContainer>
       <Provider store={store}>
-        <Component />
+        <Component isAuthed={store.getState().users.isAuthenticated} />
       </Provider>
     </AppContainer>,
     document.getElementById('root')

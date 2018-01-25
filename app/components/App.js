@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-// import { hashHistory, IndexRoute, Route } from 'react-router'
+import PropTypes from 'prop-types'
 import { BrowserRouter as Router, Link, Redirect, Route } from 'react-router-dom'
 
 import MainContainer from '../components/containers/MainContainer'
@@ -25,20 +25,34 @@ const ProtectedRoute = ({ component: Component, ...rest }) => (
   )} />
 )
 
-export default function AppRoutes () {
+export default function AppRoutes ({isAuthed}) {
   return (
     <Router>
       <div>
-        <ul>
-          <li><Link to='/'>Main</Link></li>
-          <li><Link to='/notes'>Notes</Link></li>
-          <li><Link to='/auth'>Auth</Link></li>
-        </ul>
+        {isAuthed === true
+          ? <ul>
+            <li><Link to='/notes'>Notes n</Link></li>
+            <li><Link to='/logout'>Logout</Link></li>
+          </ul>
+          : <ul>
+            <li><Link to='/'>Main</Link></li>
+            <li><Link to='/auth'>Auth</Link></li>
+          </ul>}
         <Route exact path='/' component={MainContainer} />
         <ProtectedRoute path='/notes' component={NotesContainer} />
+        <Route path='/logout'/>
         <Route path='/auth' component={AuthenticationContainer}/>
         <Route component={FourOhFour}/>
       </div>
     </Router>
   )
+}
+
+AppRoutes.propTypes = {
+  isAuthed: PropTypes.bool.isRequired,
+}
+
+// default props
+AppRoutes.defaultProps = {
+  isAuthed: false,
 }
