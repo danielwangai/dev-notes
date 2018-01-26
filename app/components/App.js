@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { BrowserRouter as Router, Link, Redirect, Route } from 'react-router-dom'
-
-import MainContainer from '../components/containers/MainContainer'
-import AuthenticationContainer from '../components/containers/AuthenticationContainer/AuthenticationContainer'
-import NotesContainer from '../components/containers/Notes/NotesContainer'
+import { bindActionCreators } from 'redux'
+import { Link, withRouter } from 'react-router-dom'
+import { connect } from 'react-redux'
 
 import { store } from '../'
-import { checkIfAuthed } from '../helpers/utils'
+import { fetchUserFromLocalStorage } from '../helpers/utils'
+import Routes from './Routes'
+import { signOut, getUserfromStorage } from '../store/modules/users/users'
 
 // TODO - 404 Page
 
@@ -17,42 +17,56 @@ export const FourOhFour = () => {
   )
 }
 
-const ProtectedRoute = ({ component: Component, ...rest }) => (
-  <Route {...rest} render={(props) => (
-    checkIfAuthed(store) === true
-      ? <Component {...props} />
-      : <Redirect to='/auth' />
-  )} />
-)
+class AppRoutes extends Component {
+  componentDidMount () {
+    if (fetchUserFromLocalStorage()) {
+      this.props.getUserfromStorage()
+    }
+  }
 
-export default function AppRoutes ({isAuthed}) {
-  return (
-    <Router>
+  handleLogout = (event) => {
+    this.props.signOut(store.getState().users.authenticatedUserId)
+    this.props.history.push('/auth')
+  }
+  render () {
+    return (
       <div>
-        {isAuthed === true
+        {this.props.isAuthenticated === true
           ? <ul>
-            <li><Link to='/notes'>Notes n</Link></li>
-            <li><Link to='/logout'>Logout</Link></li>
+            <li><Link to='/notes'>Notes </Link></li>
+            <li onClick={this.handleLogout}>Logout</li>
           </ul>
           : <ul>
             <li><Link to='/'>Main</Link></li>
             <li><Link to='/auth'>Auth</Link></li>
           </ul>}
-        <Route exact path='/' component={MainContainer} />
-        <ProtectedRoute path='/notes' component={NotesContainer} />
-        <Route path='/logout'/>
-        <Route path='/auth' component={AuthenticationContainer}/>
-        <Route component={FourOhFour}/>
+        <Routes />
       </div>
-    </Router>
-  )
+    )
+  }
 }
 
 AppRoutes.propTypes = {
-  isAuthed: PropTypes.bool.isRequired,
+  isAuthenticated: PropTypes.bool.isRequired,
+  getUserfromStorage: PropTypes.func.isRequired,
+  signOut: PropTypes.func.isRequired,
 }
 
 // default props
 AppRoutes.defaultProps = {
-  isAuthed: false,
+  isAuthenticated: false,
 }
+
+const mapStateToProps = ({users}) => (
+  {
+    isAuthenticated: users.isAuthenticated,
+  }
+)
+
+const mapDispatchToProps = (dispatch) => (
+  bindActionCreators({getUserfromStorage, signOut}, dispatch)
+)
+
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(AppRoutes)
+)

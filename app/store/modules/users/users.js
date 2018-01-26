@@ -1,9 +1,12 @@
 import {
   AUTHENTICATE_USER, FETCHING_USER,
   FETCHING_USER_FAILURE, FETCHING_USER_SUCCESS,
-  REMOVE_FETCHING_USER, UNAUTHENTICATE_USER } from './actions'
-import { authenticate, saveUser } from '../../../config/auth'
-import { formatUserInfo } from '../../../helpers/utils'
+  REMOVE_FETCHING_USER, UNAUTHENTICATE_USER,
+  FETCH_USER_CREDENTIALS_SUCCESS,
+  FETCH_USER_CREDENTIALS_FAILURE,
+} from './actions'
+import { authenticate, logout, saveUser } from '../../../config/auth'
+import { formatUserInfo, saveUserToLocalStorage, fetchUserFromLocalStorage, removeUserFromLocalStorage } from '../../../helpers/utils'
 
 // action creators
 
@@ -13,7 +16,7 @@ const fetchingUser = () => (
   }
 )
 
-const fetchingUserSuccess = (user, timestamp) => (
+export const fetchingUserSuccess = (user, timestamp) => (
   {
     type: FETCHING_USER_SUCCESS,
     user,
@@ -35,9 +38,10 @@ const authenticateUser = (userId) => (
   }
 )
 
-const unauthenticateUser = () => (
+const unauthenticateUser = (userId) => (
   {
     type: UNAUTHENTICATE_USER,
+    userId,
   }
 )
 
@@ -47,6 +51,42 @@ const removeFetchingUser = () => (
   }
 )
 
+const fetchUserCredentialsSuccess = (userInfo) => (
+  {
+    type: FETCH_USER_CREDENTIALS_SUCCESS,
+    userInfo,
+  }
+)
+
+const fetchUserCredentialsFailure = (error) => (
+  // TODO
+  {
+    type: FETCH_USER_CREDENTIALS_FAILURE,
+    error,
+  }
+)
+
+// local storage methods
+/**
+ * Resave user info thunk
+ */
+export const getUserfromStorage = () => {
+  return (dispatch) => {
+    dispatch(fetchingUser())
+    const localStorageData = fetchUserFromLocalStorage()
+    if (localStorageData && Object.keys(localStorageData)) {
+      const userInfo = formatUserInfo(
+        localStorageData.userId,
+        localStorageData.name,
+        localStorageData.email,
+        localStorageData.pictureUrl)
+      dispatch(fetchUserCredentialsSuccess(userInfo))
+    } else {
+      dispatch(fetchUserCredentialsFailure('You are not logged in'))
+    }
+  }
+}
+
 // thunks
 
 export function fetchAndAuthenticateUser () {
@@ -55,25 +95,38 @@ export function fetchAndAuthenticateUser () {
     dispatch(fetchingUser())
     // call firebase method to verify authentication to fb
     return authenticate().then(({user, credential}) => {
-      console.log('facebook login - user\n\n', user)
-      console.log('facebook login - credential\n\n', credential)
       const userData = user.providerData[0]
       const userInfo = formatUserInfo(userData.uid, userData.displayName, userData.email, userData.photoURL)
-      console.log('dispatch user success', dispatch(fetchingUserSuccess(userInfo, Date.now())))
       return dispatch(fetchingUserSuccess(userInfo, Date.now()))
     })
-      // save user to firebase
-      .then(({user}) => saveUser(user))
-      // authenticate user
-      .then((user) => dispatch(authenticateUser(user.userId)))
+      .then(({user}) => {
+        saveUserToLocalStorage(user)
+        return saveUser(user)
+      })// save user to firebase
+      .then((user) => {
+        dispatch(authenticateUser(user.userId))
+      })// dispatch action to authenticate user
       .catch((error) => dispatch(fetchingUserFailure(error)))
   }
+}
+
+export const signOut = (userId) => {
+  return (
+    (dispatch) => {
+      logout()
+      dispatch(unauthenticateUser(userId))
+      // remove from local storage
+      removeUserFromLocalStorage()
+    }
+  )
 }
 
 // user reducer
 const initialState = {
   isFetching: false,
   error: '',
+  // isAuthenticated: false,
+  // authenticatedUserId: '',
 }
 
 const initialUserState = {
@@ -106,10 +159,20 @@ const users = (state = initialState, action) => {
       isFetching: true,
     }
   case FETCHING_USER_FAILURE:
+  case FETCH_USER_CREDENTIALS_FAILURE:
     return {
       ...state,
       isFetching: false,
       error: action.error,
+    }
+  case FETCH_USER_CREDENTIALS_SUCCESS:
+    return {
+      ...state,
+      isFetching: false,
+      error: '',
+      authenticatedUserId: action.userInfo.userId,
+      isAuthenticated: true,
+      [action.userInfo.userId]: action.userInfo,
     }
   case FETCHING_USER_SUCCESS:
     return !action.user ? {
@@ -129,12 +192,16 @@ const users = (state = initialState, action) => {
       authenticatedUserId: action.userId,
       isAuthenticated: true,
     }
-  case UNAUTHENTICATE_USER:
+  case UNAUTHENTICATE_USER: {
+    let unauthedData = delete state[action.userId]
     return {
-      ...state,
+      unauthedData,
       authenticatedUserId: '',
       isAuthenticated: false,
+      isFetching: false,
+      error: '',
     }
+  }
   case REMOVE_FETCHING_USER:
     return {
       ...state,
@@ -145,5 +212,4 @@ const users = (state = initialState, action) => {
   }
 }
 
-// export default reducer
 export { users }

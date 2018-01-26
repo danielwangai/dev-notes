@@ -16,7 +16,7 @@ class AuthenticationContainer extends Component {
   handleAuth (event) {
     event.preventDefault()
     this.props.fetchAndAuthenticateUser()
-      .then(() => this.context.router.history.replace('landing'))// redirect to feed route
+      .then(() => this.context.router.history.replace('notes'))// redirect to feed route
   }
 
   render () {
@@ -25,8 +25,7 @@ class AuthenticationContainer extends Component {
         <Authentication
           isFetching={this.props.isFetching}
           error={this.props.error}
-          onAuthenticate={this.handleAuth}
-        />
+          onAuthenticate={this.handleAuth} />
       </div>
     )
   }
@@ -45,7 +44,6 @@ AuthenticationContainer.contextTypes = {
 }
 
 function mapStateToProps ({users}) {
-  console.log('user state', users)
   return {
     isFetching: users.isFetching,
     error: users.error,
@@ -53,7 +51,6 @@ function mapStateToProps ({users}) {
 }
 
 function mapDispatchToProps (dispatch) {
-  console.log('userActionCreators\n\n', userActionCreators)
   return bindActionCreators(userActionCreators, dispatch)
 }
 
