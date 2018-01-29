@@ -4,13 +4,8 @@
         "react"
     ],
     "plugins": [
+        "syntax-dynamic-import",
+        "transform-class-properties",
         "transform-object-rest-spread"
-    ],
-    "env": {
-        "development": {
-            "presets": [
-                "react-hmre"
-            ]
-        }
-    }
+    ]
 }
