@@ -1,16 +1,15 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import RaisedButton from 'material-ui/RaisedButton'
+
 const { bool, func, string } = PropTypes
 
 const FacebookLogin = ({isFetching, onAuthenticate}) => {
   return (
     <div>
-      <button onClick={onAuthenticate}>
-        {isFetching ? <p>Fetching</p>
-          : <p>Authenticate</p>
-        }
-      </button>
+      {/* <FlatButton label="Primary" primary={true} /> */}
+      <RaisedButton onClick={onAuthenticate} primary={true} label={isFetching ? 'Fetching' : 'Authenticate'} />
     </div>
   )
 }

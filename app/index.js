@@ -6,6 +6,8 @@ import { BrowserRouter as Router, HashRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { AppContainer } from 'react-hot-loader'
 
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+
 import configureStore from './store/store'
 import AppRoutes from './components/App'
 
@@ -16,9 +18,11 @@ const renderApp = (Component) => {
   ReactDOM.render(
     <AppContainer>
       <Provider store={store}>
-        <HashRouter history={browserHistory}>
-          <Component />
-        </HashRouter>
+        <MuiThemeProvider>
+          <HashRouter history={browserHistory}>
+            <Component />
+          </HashRouter>
+        </MuiThemeProvider>
       </Provider>
     </AppContainer>,
     document.getElementById('root')

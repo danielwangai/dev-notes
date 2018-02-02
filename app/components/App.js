@@ -9,6 +9,8 @@ import { fetchUserFromLocalStorage } from '../helpers/utils'
 import Routes from './Routes'
 import { signOut, getUserfromStorage } from '../store/modules/users/users'
 
+import './App'
+
 // TODO - 404 Page
 
 export const FourOhFour = () => {
