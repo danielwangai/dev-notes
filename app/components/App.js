@@ -1,10 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { bindActionCreators } from 'redux'
 import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 
-import { store } from '../'
 import { fetchUserFromLocalStorage } from '../helpers/utils'
 import Routes from './Routes'
 import { signOut, getUserfromStorage } from '../store/modules/users/users'
@@ -27,7 +25,7 @@ class AppRoutes extends Component {
   }
 
   handleLogout = (event) => {
-    this.props.signOut(store.getState().users.authenticatedUserId)
+    this.props.signOut(this.props.authenticatedUserId)
     this.props.history.push('/auth')
   }
   render () {
@@ -52,23 +50,22 @@ AppRoutes.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
   getUserfromStorage: PropTypes.func.isRequired,
   signOut: PropTypes.func.isRequired,
+  authenticatedUserId: PropTypes.string,
 }
 
 // default props
 AppRoutes.defaultProps = {
   isAuthenticated: false,
+  authenticatedUserId: '',
 }
 
 const mapStateToProps = ({users}) => (
   {
     isAuthenticated: users.isAuthenticated,
+    authenticatedUserId: users.authenticatedUserId,
   }
 )
 
-const mapDispatchToProps = (dispatch) => (
-  bindActionCreators({getUserfromStorage, signOut}, dispatch)
-)
-
 export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(AppRoutes)
+  connect(mapStateToProps, {getUserfromStorage, signOut})(AppRoutes)
 )
