@@ -6,8 +6,7 @@ import { connect } from 'react-redux'
 import { fetchUserFromLocalStorage } from '../helpers/utils'
 import Routes from './Routes'
 import { signOut, getUserfromStorage } from '../store/modules/users/users'
-
-import './App'
+import './app.style.scss'
 
 // TODO - 404 Page
 

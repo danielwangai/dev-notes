@@ -1,0 +1,1 @@
+export const ADD_SINGLE_USER_NOTE = 'ADD_SINGLE_USER_NOTE'

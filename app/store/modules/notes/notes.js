@@ -1,5 +1,6 @@
 import * as noteActions from './actions'
-import { ADD_NOTE } from './actions';
+import { saveNoteToFirebase } from '../../../helpers/api'
+import { addSingleUserNote } from '../userNotes/userNotes'
 
 // note action creators
 
@@ -10,6 +11,20 @@ const addNote = note => (
   }
 )
 
+// thunks
+
+export const saveNote = (note) => (dispatch, getState) => {
+  const userId = getState().users.authenticatedUserId
+  saveNoteToFirebase(note, userId)
+    .then((noteWithId) => {
+      dispatch(addNote(noteWithId))
+      dispatch(addSingleUserNote(noteWithId.noteId))
+    })
+    .catch((error) => {
+      console.warn('Error on save notes', error)
+    })
+}
+
 // initial state for notes
 const initialState = {
   isFetching: false,
@@ -18,7 +33,7 @@ const initialState = {
 
 // note reducer
 
-const notes = (state = initialState, action) => {
+export const notes = (state = initialState, action) => {
   switch (action.type) {
   case noteActions.ADD_NOTE:
     return {
@@ -28,10 +43,6 @@ const notes = (state = initialState, action) => {
       [action.note.noteId]: action.note,
     }
   default:
-    return {
-      ...state,
-    }
+    return state
   }
 }
-
-export default notes

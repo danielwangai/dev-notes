@@ -2,6 +2,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin'
 import webpack from 'webpack'
 import path from 'path'
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
+import GoogleFontsPlugin from 'google-fonts-webpack-plugin'
 
 const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
   template: path.join(__dirname, '/app/index.html'),
@@ -87,8 +88,8 @@ if (NODE_ENV === 'production') {
   }
   config.module.rules = [
     {
-      test: /\.css/,
-      use: ['style-loader', 'css-loader'],
+      test: /\.scss/,
+      loaders: ['style-loader', 'css-loader', 'sass-loader'],
     },
     ...config.module.rules,
   ]
@@ -96,6 +97,11 @@ if (NODE_ENV === 'production') {
     ...config.plugins,
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
+    new GoogleFontsPlugin({
+      fonts: [
+        {family: 'Montserrat'},
+      ],
+    }),
   ]
 }
 

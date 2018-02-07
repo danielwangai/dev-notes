@@ -14,7 +14,9 @@
     "production": "webpack -p"
   },
   "dependencies": {
+    "css-loader": "^0.28.9",
     "firebase": "^4.8.2",
+    "google-fonts-webpack-plugin": "^0.4.4",
     "material-ui": "^0.20.0",
     "node-sass": "^4.7.2",
     "prop-types": "^15.6.0",
@@ -52,6 +54,7 @@
     "extract-text-webpack-plugin": "^3.0.2",
     "html-webpack-plugin": "^2.30.1",
     "react-hot-loader": "^3.1.3",
+    "style-loader": "^0.20.1",
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.10.0",
     "webpack-hot-middleware": "^2.21.0"
