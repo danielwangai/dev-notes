@@ -7,6 +7,7 @@ import { fetchUserFromLocalStorage } from '../helpers/utils'
 import Routes from './Routes'
 import { signOut, getUserfromStorage } from '../store/modules/users/users'
 import './app.style.scss'
+import NotesModalContainer from './containers/Notes/NotesModalContainer'
 
 // TODO - 404 Page
 
@@ -32,6 +33,7 @@ class AppRoutes extends Component {
       <div>
         {this.props.isAuthenticated === true
           ? <ul>
+            <li><NotesModalContainer /></li>
             <li><Link to='/notes'>Notes </Link></li>
             <li onClick={this.handleLogout}>Logout</li>
           </ul>

@@ -29,3 +29,11 @@ export const fetchUserFromLocalStorage = () => (
 export const removeUserFromLocalStorage = () => {
   localStorage.removeItem('userInfo')
 }
+
+export const formatNote = (content, user) => ({
+  content,
+  timestamp: Date.now(),
+  userInfo: {
+    ...user,
+  },
+})
