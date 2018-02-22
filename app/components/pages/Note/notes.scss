@@ -1,0 +1,72 @@
+@import '../../../base.theme.scss';
+
+.note-card {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem auto;
+  padding: 3rem 3rem;
+  border: .12rem solid #eeeeee;
+  width: 50rem;
+  border-radius: .6rem;
+
+  .note-title {
+    text-align: left;
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+
+  .note-body {
+    display: flex;
+    padding-bottom: 1rem;
+
+    .note-content {
+      font-weight: lighter;
+      font-size: .9rem;
+      line-height: 1.7rem;
+    }
+  }
+  
+  .note-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-top: 2rem;
+    border-top: .0011rem solid #eeeeee;
+
+    .author-info {
+      display: flex;
+      flex-direction: row;
+      
+      .author-avatar {
+        border-radius: 4rem;
+        width: 2rem;
+        height: 2rem;
+      }
+
+      .author-name {
+        margin-left: 1rem;
+        margin-top: .3rem;
+      }
+    }
+
+    .note-likes {
+      display: flex;
+      flex-direction: row;
+
+      .note-heart {
+        border-radius: 4rem;
+        width: 2rem;
+        height: 2rem;
+      }
+
+      .note-like-count {
+        margin-left: 1rem;
+        margin-top: .3rem;
+      }
+    }
+
+    .note-publish-date {
+
+    }
+  }
+}

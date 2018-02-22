@@ -27,3 +27,18 @@ export const saveNoteToFirebase = (note, userId) => {
     saveToUserNotes(note, noteId, userId),
   ]).then(() => ({...note, noteId}))
 }
+
+/**
+ * Fetch notes
+*/
+
+export function fetchNotes () {
+  return ref.child(`notes/`).once('value')
+    .then((snapshot) => snapshot.val() || {})
+    .then((notes) => {
+      let noteIds = Object.keys(notes)
+      return noteIds.map((noteId) => (
+        notes[noteId]
+      ))
+    })
+}

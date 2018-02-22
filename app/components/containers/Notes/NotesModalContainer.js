@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import NotesModal from '../../pages/Notes/NotesModal'
+import NotesModal from '../../pages/Note/NotesModal'
 import { saveNote } from '../../../store/modules/notes/notes'
 import { formatNote } from '../../../helpers/utils'
 
@@ -12,6 +12,7 @@ class NotesModalContainer extends Component {
     super(props)
     this.state = {
       isModalOpen: false,
+      title: '',
       note: '',
     }
   }
@@ -21,9 +22,8 @@ class NotesModalContainer extends Component {
   )
 
   handleTextChange = (event) => {
-    let note = event.target.value
     this.setState({
-      [event.target.name]: note,
+      [event.target.name]: event.target.value,
     })
   }
 
@@ -32,8 +32,8 @@ class NotesModalContainer extends Component {
       console.log('you need to put a note to submit')
       return
     }
-    this.props.saveNote(formatNote(this.state.note, this.props.user))
-    this.setState({note: ''})
+    this.props.saveNote(formatNote(this.state.title, this.state.note, this.props.user))
+    this.setState({note: '', title: ''})
     this.handleModal()
   }
 

@@ -29,6 +29,11 @@ const NotesModal = (props) => {
         autoScrollBodyContent={true} >
         <div>
           <TextField
+            name='title'
+            floatingLabelText='type note title'
+            fullWidth={true}
+            onChange={props.handleTextChange} /><br />
+          <TextField
             name='note'
             floatingLabelText='type your note'
             multiLine={true}

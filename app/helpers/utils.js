@@ -30,7 +30,8 @@ export const removeUserFromLocalStorage = () => {
   localStorage.removeItem('userInfo')
 }
 
-export const formatNote = (content, user) => ({
+export const formatNote = (title, content, user) => ({
+  title,
   content,
   timestamp: Date.now(),
   userInfo: {

@@ -1,2 +1,5 @@
 // notes actions
 export const ADD_NOTE = 'ADD_NOTE'
+export const FETCHING_NOTES = 'FETCH_NOTES'
+export const FETCHING_NOTES_SUCCESS = 'FETCHING_NOTES_SUCCESS'
+export const FETCHING_NOTES_FAILURE = 'FETCHING_NOTES_FAILURE'
